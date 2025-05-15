@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garage Life Game - Главный Экран</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            overscroll-behavior: none; /* Предотвращает "оттягивание" страницы на мобильных */
+        }
+        .game-container {
+            background: linear-gradient(to bottom, #1a202c, #2d3748, #4a5568); /* Темный градиент как фон города */
+            color: #e2e8f0; /* Светлый текст */
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Занимает всю высоту экрана */
+            overflow: hidden; /* Предотвращает случайный скролл */
+            position: relative; /* Для позиционирования всплывающих элементов */
+        }
+        .header {
+            padding: 15px;
+            background-color: rgba(0,0,0,0.3);
+            text-align: center;
+            border-bottom: 2px solid #4a5568;
+        }
+        .currency-display {
+            font-size: 1.25rem; /* 20px */
+            margin-bottom: 5px;
+        }
+        .balance {
+            font-size: 1rem; /* 16px */
+            color: #a0aec0; /* Менее яркий цвет для баланса */
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative; /* Для позиционирования эффектов */
+        }
+        .car-area {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .car-image {
+            width: 80%;
+            max-width: 350px;
+            height: auto;
+            margin-bottom: 20px;
+            user-select: none; /* Запретить выделение изображения */
+            -webkit-user-drag: none; /* Запретить перетаскивание для Safari */
+        }
+        .hp-bar-container {
+            width: 70%;
+            max-width: 300px;
+            height: 25px;
+            background-color: #718096; /* Фон HP бара */
+            border-radius: 5px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+        .hp-bar-fill {
+            height: 100%;
+            background-color: #e53e3e; /* Красный цвет для HP */
+            width: 75%; /* Начальное значение HP (150/200 = 75%) */
+            transition: width 0.3s ease-in-out;
+            text-align: center;
+            line-height: 21px; /* Для вертикального центрирования текста, если нужен */
+            font-size: 0.8rem;
+            color: white;
+        }
+        .hp-text {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #cbd5e0;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: rgba(0,0,0,0.5);
+            border-top: 2px solid #4a5568;
+        }
+        .nav-item {
+            color: #a0aec0;
+            font-size: 0.7rem; /* Маленький шрифт для навбара */
+            text-align: center;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-item.active, .nav-item:hover {
+            color: #ffffff;
+            background-color: #4a5568;
+        }
+        .floating-coin, .floating-points {
+            position: absolute;
+            user-select: none;
+            pointer-events: none; /* Чтобы не мешали кликам */
+            animation-duration: 1s;
+            animation-timing-function: ease-out;
+            animation-fill-mode: forwards; /* Остается в конечном состоянии */
+        }
+        .floating-coin {
+            width: 30px; /* Размер монетки */
+            height: 30px;
+            z-index: 100;
+        }
+        .floating-points {
+            font-size: 1.5rem; /* Размер текста "+500" */
+            color: #f6e05e; /* Желтый цвет для очков */
+            font-weight: bold;
+            text-shadow: 1px 1px 2px black;
+            z-index: 101;
+        }
+
+        @keyframes floatUpAndFade {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.5); /* Улетает вверх и немного увеличивается */
+            }
+        }
+
+        @keyframes coinFlyToScore { /* Анимация полета монетки к счету */
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--target-x, 0px), var(--target-y, -200px)) scale(0.5); /* Летит к координатам счета */
+            }
+        }
+        .game-brand {
+            font-size: 0.65rem;
+            text-align: center;
+            padding-bottom: 8px;
+            color: #718096;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        /* Стили для сообщения о необходимости ТО */
+        .maintenance-alert {
+            position: absolute;
+            bottom: 15%; /* Позиционирование над навбаром */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(229, 62, 62, 0.9); /* Красный фон */
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            z-index: 200;
+            display: none; /* Скрыто по умолчанию */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-800">
+
+    <div id="gameApp" class="game-container mx-auto max-w-md shadow-2xl">
+        <div class="header">
+            <div class="currency-display">VEST COIN</div>
+            <div id="balanceDisplay" class="balance">15000 vest</div>
+            </div>
+
+        <div id="mainContent" class="main-content">
+            <div id="carClickArea" class="car-area">
+                <img src="C:\Users\user\Desktop\Яндекс Дзен\Свое мини приложение\Модели\Веста\Веста серая.png" alt="Изображение автомобиля" class="car-image" id="carImage">
+                
+                <div class="hp-bar-container">
+                    <div id="hpBarFill" class="hp-bar-fill"></div>
+                </div>
+                <div id="hpText" class="hp-text">150/200 HP</div>
+            </div>
+        </div>
+        
+        <div id="maintenanceAlert" class="maintenance-alert">
+            Нужно ТО! HP на нуле!
+        </div>
+
+        <div class="navbar">
+            <div class="nav-item active" data-screen="game">Игра</div>
+            <div class="nav-item" data-screen="garage">Гараж</div>
+            <div class="nav-item" data-screen="store">Магазин</div>
+            <div class="nav-item" data-screen="taxi">Такси</div>
+            <div class="nav-item" data-screen="more">Подробней</div>
+        </div>
+        <div class="game-brand">@Garage_Life_Game_Bot</div>
+    </div>
+
+    <script>
+        // Игровые переменные (пока что для фронтенда)
+        let currentHp = 150;
+        const maxHp = 200;
+        let currentBalance = 15000; // Начальный баланс
+        const tapValue = 500; // Сколько зарабатываем за тап
+        const hpLossPerTap = 1; // Сколько HP теряется за тап
+
+        // URL изображения монетки (ВАЖНО: Замените на свой URL!)
+        const COIN_IMAGE_URL = 'https://psv4.userapi.com/s/v1/d/HMvoJ9kMZIDlSk-LB4aflz-DXPyB88MzY1GcJm-wiZFJqaW98piFVu2ynVZQCIc_mB7yze5rOMIvUBZBLipS63V_H-kPFQUpD5-hXcaDcTTxKtHGV0NZwQ/bez_fona.png'; // Замените этим URL на путь к вашему файлу "без фона.jpg"
+
+        // Элементы DOM
+        const carClickArea = document.getElementById('carClickArea');
+        const carImage = document.getElementById('carImage');
+        const hpBarFill = document.getElementById('hpBarFill');
+        const hpText = document.getElementById('hpText');
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        const mainContent = document.getElementById('mainContent');
+        const maintenanceAlert = document.getElementById('maintenanceAlert');
+        const currencyDisplayElement = document.querySelector('.currency-display'); // Элемент для получения координат цели монетки
+
+
+        // Инициализация игры
+        function initGame() {
+            updateHpDisplay();
+            updateBalanceDisplay();
+            carClickArea.addEventListener('click', handleCarTap);
+            // carClickArea.addEventListener('touchstart', handleCarTap, { passive: true }); // Для мобильных устройств
+        }
+
+        // Обработка тапа по машине
+        function handleCarTap(event) {
+            if (currentHp <= 0) {
+                showMaintenanceAlert();
+                // Можно добавить вибрацию, если Telegram Web Apps API поддерживает
+                // navigator.vibrate && navigator.vibrate(100); 
+                return; // Нельзя тапать, если нет HP
+            }
+
+            // Уменьшаем HP
+            currentHp -= hpLossPerTap;
+            if (currentHp < 0) currentHp = 0;
+            
+            // Увеличиваем баланс (пока только на фронте)
+            currentBalance += tapValue;
+
+            updateHpDisplay();
+            updateBalanceDisplay();
+
+            // Анимация "+очки"
+            const clickX = event.clientX || (event.touches && event.touches[0].clientX);
+            const clickY = event.clientY || (event.touches && event.touches[0].clientY);
+            animatePoints(clickX, clickY);
+
+            // Анимация монетки
+            animateCoin(clickX, clickY);
+            
+            // Небольшая анимация машины при клике
+            carImage.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                carImage.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        // Обновление отображения HP
+        function updateHpDisplay() {
+            const hpPercentage = (currentHp / maxHp) * 100;
+            hpBarFill.style.width = `${hpPercentage}%`;
+            hpText.textContent = `${currentHp}/${maxHp} HP`;
+
+            // Визуальное изменение машины при низком HP (становится "грязной")
+            if (currentHp < maxHp * 0.25 && currentHp > 0) { // Меньше 25% HP
+                carImage.style.filter = 'grayscale(50%) sepia(20%)'; // Пример "загрязнения"
+            } else if (currentHp === 0) {
+                carImage.style.filter = 'grayscale(80%) sepia(50%) brightness(0.8)'; // Сильно грязная
+            }
+            else {
+                carImage.style.filter = 'none'; // Чистая машина
+            }
+        }
+        
+        // Обновление отображения баланса
+        function updateBalanceDisplay() {
+            balanceDisplay.textContent = `${currentBalance} vest`;
+        }
+
+        // Анимация "+очки"
+        function animatePoints(x, y) {
+            const pointsElement = document.createElement('div');
+            pointsElement.textContent = `+${tapValue}`;
+            pointsElement.className = 'floating-points';
+            
+            // Позиционируем относительно mainContent, чтобы координаты были корректны
+            const mainContentRect = mainContent.getBoundingClientRect();
+            pointsElement.style.left = `${x - mainContentRect.left - 20}px`; // -20 для центрирования
+            pointsElement.style.top = `${y - mainContentRect.top - 30}px`;  // -30 чтобы было над пальцем
+
+            pointsElement.style.animationName = 'floatUpAndFade';
+            
+            mainContent.appendChild(pointsElement);
+
+            pointsElement.addEventListener('animationend', () => {
+                pointsElement.remove();
+            });
+        }
+
+        // Анимация монетки
+        function animateCoin(startX, startY) {
+            const coinElement = document.createElement('img');
+            coinElement.src = COIN_IMAGE_URL;
+            coinElement.className = 'floating-coin';
+
+            const mainContentRect = mainContent.getBoundingClientRect();
+            coinElement.style.left = `${startX - mainContentRect.left - 15}px`; // -15 для центрирования монетки
+            coinElement.style.top = `${startY - mainContentRect.top - 15}px`;
+
+            // Координаты цели (верхний элемент с балансом)
+            const targetRect = currencyDisplayElement.getBoundingClientRect();
+            const gameAppRect = document.getElementById('gameApp').getBoundingClientRect();
+
+            // Вычисляем относительные координаты цели для анимации
+            // Начало координат анимации - это точка клика ВНУТРИ mainContent
+            // Цель - это currencyDisplayElement, его координаты тоже нужно сделать относительными к mainContent
+            // Но проще анимировать до абсолютных координат, если coinElement позиционируется абсолютно к gameApp
+            // Переделаем: позиционируем coinElement абсолютно к gameApp
+            
+            const appCoin = document.createElement('img');
+            appCoin.src = COIN_IMAGE_URL;
+            appCoin.className = 'floating-coin';
+            document.getElementById('gameApp').appendChild(appCoin); // Добавляем к главному контейнеру
+
+            appCoin.style.left = `${startX - gameAppRect.left - 15}px`;
+            appCoin.style.top = `${startY - gameAppRect.top - 15}px`;
+            
+            // Конечные координаты относительно gameApp
+            const endX = (targetRect.left + targetRect.width / 2) - gameAppRect.left - 15; // Центр элемента баланса
+            const endY = targetRect.top - gameAppRect.top;
+
+            // Устанавливаем CSS переменные для анимации
+            appCoin.style.setProperty('--target-x', `${endX - (startX - gameAppRect.left - 15)}px`);
+            appCoin.style.setProperty('--target-y', `${endY - (startY - gameAppRect.top - 15)}px`);
+            appCoin.style.animationName = 'coinFlyToScore';
+            
+            appCoin.addEventListener('animationend', () => {
+                appCoin.remove();
+            });
+        }
+
+        // Показать сообщение о необходимости ТО
+        function showMaintenanceAlert() {
+            maintenanceAlert.style.display = 'block';
+            setTimeout(() => {
+                maintenanceAlert.style.display = 'none';
+            }, 3000); // Скрыть через 3 секунды
+        }
+        
+        // Навигация (заглушка)
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                // Здесь будет логика переключения экранов
+                console.log(`Переход на экран: ${item.dataset.screen}`);
+                 alert(`Заглушка: Переход на экран "${item.textContent}"`);
+            });
+        });
+
+        // Запуск игры при загрузке страницы
+        window.onload = initGame;
+
+    </script>
+</body>
+</html>
