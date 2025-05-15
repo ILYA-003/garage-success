@@ -9,161 +9,179 @@
     <style>
         body {
             font-family: 'Press Start 2P', cursive;
-            overscroll-behavior: none; /* Предотвращает "оттягивание" страницы на мобильных */
+            overscroll-behavior: none; 
+            margin: 0; 
         }
         .game-container {
-            background: linear-gradient(to bottom, #1a202c, #2d3748, #4a5568); /* Темный градиент как фон города */
-            color: #e2e8f0; /* Светлый текст */
+            background-image: url('https://github.com/ILYA-003/garage-success/blob/main/%D0%A4%D0%BE%D0%BD%20%D0%B8%D0%B3%D1%80%D1%8B.png?raw=true');
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            color: #e2e8f0; 
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Занимает всю высоту экрана */
-            overflow: hidden; /* Предотвращает случайный скролл */
-            position: relative; /* Для позиционирования всплывающих элементов */
+            height: 100vh; 
+            max-height: -webkit-fill-available; /* Для корректной высоты в iOS Safari */
+            overflow: hidden; 
+            position: relative; 
         }
         .header {
-            padding: 15px;
-            background-color: rgba(0,0,0,0.3);
+            padding: 12px 15px; 
+            background-color: rgba(0,0,0,0.6); 
             text-align: center;
             border-bottom: 2px solid #4a5568;
+            z-index: 10; 
         }
         .currency-display {
-            font-size: 1.25rem; /* 20px */
-            margin-bottom: 5px;
+            font-size: 1.1rem; 
+            margin-bottom: 3px;
+            color: #ffffff; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7); 
         }
         .balance {
-            font-size: 1rem; /* 16px */
-            color: #a0aec0; /* Менее яркий цвет для баланса */
+            font-size: 0.9rem; 
+            color: #e0e0e0; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7); 
         }
         .main-content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-end; 
             align-items: center;
-            padding: 20px;
-            position: relative; /* Для позиционирования эффектов */
+            padding: 10px 20px; 
+            position: relative; 
         }
         .car-area {
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-        .car-image {
-            width: 80%;
-            max-width: 350px;
-            height: auto;
-            margin-bottom: 20px;
-            user-select: none; /* Запретить выделение изображения */
-            -webkit-user-drag: none; /* Запретить перетаскивание для Safari */
+            filter: drop-shadow(0px 5px 15px rgba(0,0,0,0.3));
+            margin-bottom: 2%; /* Уменьшен отступ снизу для более крупной машины */
+            width: 100%; 
         }
         .hp-bar-container {
-            width: 70%;
-            max-width: 300px;
-            height: 25px;
-            background-color: #718096; /* Фон HP бара */
-            border-radius: 5px;
+            width: 70%; /* Сделал немного шире для крупной машины */
+            max-width: 320px; 
+            height: 18px; 
+            background-color: rgba(80, 90, 110, 0.7); 
+            border-radius: 4px; 
             overflow: hidden;
-            border: 2px solid #e2e8f0;
+            border: 1px solid rgba(200, 210, 220, 0.7); 
+            margin-bottom: 4px; 
         }
         .hp-bar-fill {
             height: 100%;
-            background-color: #e53e3e; /* Красный цвет для HP */
-            width: 75%; /* Начальное значение HP (150/200 = 75%) */
-            transition: width 0.3s ease-in-out;
+            background-color: #ef4444; 
+            width: 75%; 
+            transition: width 0.3s ease-in-out, background-color 0.3s ease; 
             text-align: center;
-            line-height: 21px; /* Для вертикального центрирования текста, если нужен */
-            font-size: 0.8rem;
+            line-height: 16px; 
+            font-size: 0.6rem; 
             color: white;
         }
         .hp-text {
-            margin-top: 5px;
-            font-size: 0.9rem;
-            color: #cbd5e0;
+            font-size: 0.7rem; 
+            color: #ffffff; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8); 
+            margin-bottom: 10px; 
+        }
+        .car-image {
+            /* Машина значительно больше */
+            width: 90%; 
+            max-width: 420px; /* Увеличена максимальная ширина */
+            height: auto;
+            user-select: none; 
+            -webkit-user-drag: none;
+            transition: transform 0.1s ease-out; 
         }
         .navbar {
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
-            background-color: rgba(0,0,0,0.5);
-            border-top: 2px solid #4a5568;
+            padding: 8px 0; 
+            background-color: rgba(0,0,0,0.7); 
+            border-top: 2px solid #3b4252; 
+            z-index: 10;
         }
         .nav-item {
-            color: #a0aec0;
-            font-size: 0.7rem; /* Маленький шрифт для навбара */
+            color: #d8dee9; 
+            font-size: 0.6rem; 
             text-align: center;
-            padding: 5px;
+            padding: 4px; 
             cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 18%; 
+        }
+        .nav-item svg {
+            width: 24px; 
+            height: 24px;
+            margin-bottom: 2px;
+            fill: currentColor; 
         }
         .nav-item.active, .nav-item:hover {
             color: #ffffff;
-            background-color: #4a5568;
+            background-color: #4c566a; 
         }
         .floating-coin, .floating-points {
             position: absolute;
             user-select: none;
-            pointer-events: none; /* Чтобы не мешали кликам */
-            animation-duration: 1s;
+            pointer-events: none; 
+            animation-duration: 0.8s; 
             animation-timing-function: ease-out;
-            animation-fill-mode: forwards; /* Остается в конечном состоянии */
+            animation-fill-mode: forwards; 
         }
         .floating-coin {
-            width: 30px; /* Размер монетки */
+            width: 30px; 
             height: 30px;
             z-index: 100;
         }
         .floating-points {
-            font-size: 1.5rem; /* Размер текста "+500" */
-            color: #f6e05e; /* Желтый цвет для очков */
+            font-size: 1.5rem; 
+            color: #ebcb8b; 
             font-weight: bold;
-            text-shadow: 1px 1px 2px black;
+            text-shadow: 1px 1px 2px black, 0 0 4px #b48ead; 
             z-index: 101;
         }
 
         @keyframes floatUpAndFade {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-80px) scale(1.5); /* Улетает вверх и немного увеличивается */
-            }
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-70px) scale(1.5); }
         }
 
-        @keyframes coinFlyToScore { /* Анимация полета монетки к счету */
-            0% {
-                opacity: 1;
-                transform: translate(0, 0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(var(--target-x, 0px), var(--target-y, -200px)) scale(0.5); /* Летит к координатам счета */
-            }
+        @keyframes coinFlyToScore { 
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--target-x, 0px), var(--target-y, -200px)) scale(0.3); }
         }
         .game-brand {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             text-align: center;
-            padding-bottom: 8px;
-            color: #718096;
-            background-color: rgba(0,0,0,0.5);
+            padding-bottom: 6px;
+            padding-top: 2px;
+            color: #abb2bf; 
+            background-color: rgba(0,0,0,0.7);
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
         }
 
-        /* Стили для сообщения о необходимости ТО */
         .maintenance-alert {
             position: absolute;
-            bottom: 15%; /* Позиционирование над навбаром */
+            bottom: 22%; 
             left: 50%;
             transform: translateX(-50%);
-            background-color: rgba(229, 62, 62, 0.9); /* Красный фон */
+            background-color: rgba(191, 97, 106, 0.95); 
             color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
             z-index: 200;
-            display: none; /* Скрыто по умолчанию */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: none; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            text-align: center;
         }
     </style>
 </head>
@@ -173,17 +191,16 @@
         <div class="header">
             <div class="currency-display">VEST COIN</div>
             <div id="balanceDisplay" class="balance">15000 vest</div>
-            </div>
+        </div>
 
         <div id="mainContent" class="main-content">
             <div id="carClickArea" class="car-area">
-                <img src="C:\Users\user\Desktop\Яндекс Дзен\Свое мини приложение\Модели\Веста\Веста серая.png" alt="Изображение автомобиля" class="car-image" id="carImage">
-                
                 <div class="hp-bar-container">
                     <div id="hpBarFill" class="hp-bar-fill"></div>
                 </div>
                 <div id="hpText" class="hp-text">150/200 HP</div>
-            </div>
+
+                <img src="" alt="Изображение автомобиля" class="car-image" id="carImage"> </div>
         </div>
         
         <div id="maintenanceAlert" class="maintenance-alert">
@@ -191,27 +208,43 @@
         </div>
 
         <div class="navbar">
-            <div class="nav-item active" data-screen="game">Игра</div>
-            <div class="nav-item" data-screen="garage">Гараж</div>
-            <div class="nav-item" data-screen="store">Магазин</div>
-            <div class="nav-item" data-screen="taxi">Такси</div>
-            <div class="nav-item" data-screen="more">Подробней</div>
+            <div class="nav-item active" data-screen="game">
+                <svg viewBox="0 0 24 24"><path d="M9.525 4.25L8.025 5.75L12.025 9.75L16.025 5.75L14.525 4.25L12.025 6.75L9.525 4.25ZM4.25 9.5L5.75 8L9.75 12L5.75 16L4.25 14.5L6.75 12L4.25 9.5ZM19.75 9.5L17.25 12L19.75 14.5L18.25 16L14.25 12L18.25 8L19.75 9.5ZM9.525 19.75L12.025 17.25L14.525 19.75L16.025 18.25L12.025 14.25L8.025 18.25L9.525 19.75Z M11 11H13V13H11V11Z"></path></svg>
+                Игра
+            </div>
+            <div class="nav-item" data-screen="garage">
+                <svg viewBox="0 0 24 24"><path d="M4 9H6V11H4V9M12 9H14V11H12V9M20 9H22V11H20V9M6 1H2V22H22V1H6M16.5 13.5L18 12L16.5 10.5L15 12L16.5 13.5M8 20H4V13H8V20M14 20H10V13H14V20M20 20H16V13H20V20M20 7H4V4H20V7Z"></path></svg>
+                Гараж
+            </div>
+            <div class="nav-item" data-screen="store">
+                <svg viewBox="0 0 24 24"><path d="M4 4H6V6H4V4M10 4H12V6H10V4M16 4H18V6H16V4M2 1H22V3H2V1M2 7H22V9H2V7M4 10H6V12H4V10M10 10H12V12H10V10M16 10H18V12H16V10M2 13H22V15H2V13M4 16H6V18H4V16M10 16H12V18H10V16M16 16H18V18H16V16M2 19H22V21H2V19Z"></path></svg>
+                Магазин
+            </div>
+            <div class="nav-item" data-screen="taxi">
+                <svg viewBox="0 0 24 24"><path d="M19 17H21V19H19V17M1 17H3V19H1V17M5 1L1 5V15H3C3 16.11 3.9 17 5 17S7 16.11 7 15H17C17 16.11 17.9 17 19 17S21 16.11 21 15H23V5L19 1H5M6.5 3H17.5L19.67 5H4.33L6.5 3M3 7H21V11H3V7M7 8V10H9V8H7M11 8V10H13V8H11M15 8V10H17V8H15Z"></path></svg>
+                Такси
+            </div>
+            <div class="nav-item" data-screen="more">
+                <svg viewBox="0 0 24 24"><path d="M6 10C4.9 10 4 10.9 4 12C4 13.1 4.9 14 6 14C7.1 14 8 13.1 8 12C8 10.9 7.1 10 6 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10ZM18 10C16.9 10 16 10.9 16 12C16 13.1 16.9 14 18 14C19.1 14 20 13.1 20 12C20 10.9 19.1 10 18 10Z"></path></svg>
+                Подробней
+            </div>
         </div>
         <div class="game-brand">@Garage_Life_Game_Bot</div>
     </div>
 
     <script>
-        // Игровые переменные (пока что для фронтенда)
         let currentHp = 150;
         const maxHp = 200;
-        let currentBalance = 15000; // Начальный баланс
-        const tapValue = 500; // Сколько зарабатываем за тап
-        const hpLossPerTap = 1; // Сколько HP теряется за тап
+        let currentBalance = 15000; 
+        const tapValue = 500; 
+        const hpLossPerTap = 1; 
 
-        // URL изображения монетки (ВАЖНО: Замените на свой URL!)
-        const COIN_IMAGE_URL = 'https://psv4.userapi.com/s/v1/d/HMvoJ9kMZIDlSk-LB4aflz-DXPyB88MzY1GcJm-wiZFJqaW98piFVu2ynVZQCIc_mB7yze5rOMIvUBZBLipS63V_H-kPFQUpD5-hXcaDcTTxKtHGV0NZwQ/bez_fona.png'; // Замените этим URL на путь к вашему файлу "без фона.jpg"
+        const COIN_IMAGE_URL = 'https://github.com/ILYA-003/garage-success/blob/main/%D0%9C%D0%BE%D0%BD%D0%B5%D1%82%D0%B0%20%D0%B1%D0%B5%D0%B7%20%D1%84%D0%BE%D0%BD%D0%B0.png?raw=true'; 
+        // Обновлен URL для чистой машины
+        const CAR_IMAGE_CLEAN_URL = 'https://github.com/ILYA-003/garage-success/blob/main/%D0%92%D0%B5%D1%81%D1%82%D0%B0%20%D0%B1%D0%B5%D0%BB%D0%B0%D1%8F.png?raw=true';
+        const CAR_IMAGE_DIRTY_URL = 'https://github.com/ILYA-003/garage-success/blob/main/%D0%92%D0%B5%D1%81%D1%82%D0%B0%20%D0%B1%D0%B5%D0%BB%D0%B0%D1%8F%20%D0%B3%D1%80%D1%8F%D0%B7%D0%BD%D0%B0%D1%8F.png?raw=true';
 
-        // Элементы DOM
+
         const carClickArea = document.getElementById('carClickArea');
         const carImage = document.getElementById('carImage');
         const hpBarFill = document.getElementById('hpBarFill');
@@ -219,83 +252,103 @@
         const balanceDisplay = document.getElementById('balanceDisplay');
         const mainContent = document.getElementById('mainContent');
         const maintenanceAlert = document.getElementById('maintenanceAlert');
-        const currencyDisplayElement = document.querySelector('.currency-display'); // Элемент для получения координат цели монетки
+        const currencyDisplayElement = document.querySelector('.currency-display'); 
 
 
-        // Инициализация игры
         function initGame() {
-            updateHpDisplay();
+            // Устанавливаем начальное изображение машины в JS
+            carImage.src = CAR_IMAGE_CLEAN_URL; 
+            updateHpDisplay(); // Обновляем HP и вид машины сразу
             updateBalanceDisplay();
-            carClickArea.addEventListener('click', handleCarTap);
-            // carClickArea.addEventListener('touchstart', handleCarTap, { passive: true }); // Для мобильных устройств
+            if ('ontouchstart' in window) {
+                carClickArea.addEventListener('touchend', handleCarTap);
+            } else {
+                carClickArea.addEventListener('click', handleCarTap);
+            }
         }
 
-        // Обработка тапа по машине
         function handleCarTap(event) {
+            event.preventDefault(); 
+
             if (currentHp <= 0) {
                 showMaintenanceAlert();
-                // Можно добавить вибрацию, если Telegram Web Apps API поддерживает
-                // navigator.vibrate && navigator.vibrate(100); 
-                return; // Нельзя тапать, если нет HP
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+                }
+                return; 
             }
 
-            // Уменьшаем HP
             currentHp -= hpLossPerTap;
             if (currentHp < 0) currentHp = 0;
             
-            // Увеличиваем баланс (пока только на фронте)
             currentBalance += tapValue;
 
             updateHpDisplay();
             updateBalanceDisplay();
 
-            // Анимация "+очки"
-            const clickX = event.clientX || (event.touches && event.touches[0].clientX);
-            const clickY = event.clientY || (event.touches && event.touches[0].clientY);
-            animatePoints(clickX, clickY);
+            let clickX, clickY;
+            if (event.type === 'touchend') {
+                const touch = event.changedTouches[0];
+                clickX = touch.clientX;
+                clickY = touch.clientY;
+            } else { 
+                clickX = event.clientX;
+                clickY = event.clientY;
+            }
 
-            // Анимация монетки
+            animatePoints(clickX, clickY);
             animateCoin(clickX, clickY);
             
-            // Небольшая анимация машины при клике
-            carImage.style.transform = 'scale(0.98)';
+            carImage.style.transform = 'scale(0.98) rotate(-0.5deg)'; // Чуть меньше масштаб для крупной машины
             setTimeout(() => {
-                carImage.style.transform = 'scale(1)';
-            }, 100);
+                carImage.style.transform = 'scale(1) rotate(0deg)';
+            }, 80);
+
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
         }
 
-        // Обновление отображения HP
         function updateHpDisplay() {
             const hpPercentage = (currentHp / maxHp) * 100;
             hpBarFill.style.width = `${hpPercentage}%`;
             hpText.textContent = `${currentHp}/${maxHp} HP`;
 
-            // Визуальное изменение машины при низком HP (становится "грязной")
-            if (currentHp < maxHp * 0.25 && currentHp > 0) { // Меньше 25% HP
-                carImage.style.filter = 'grayscale(50%) sepia(20%)'; // Пример "загрязнения"
-            } else if (currentHp === 0) {
-                carImage.style.filter = 'grayscale(80%) sepia(50%) brightness(0.8)'; // Сильно грязная
-            }
-            else {
-                carImage.style.filter = 'none'; // Чистая машина
+            // Обновлен порог для грязной машины и URL
+            if (currentHp <= 0) {
+                carImage.src = CAR_IMAGE_DIRTY_URL;
+                carImage.style.filter = 'grayscale(50%) brightness(0.7)'; 
+                hpBarFill.style.backgroundColor = '#bf616a'; 
+            } else if (currentHp <= 100) { // Порог для грязной машины теперь 100 HP
+                carImage.src = CAR_IMAGE_DIRTY_URL;
+                carImage.style.filter = 'brightness(0.9)'; // Чуть светлее грязная машина, если не 0 HP
+                hpBarFill.style.backgroundColor = '#d08770'; 
+            } else { // Машина чистая
+                carImage.src = CAR_IMAGE_CLEAN_URL;
+                carImage.style.filter = 'drop-shadow(0px 5px 15px rgba(0,0,0,0.3))'; 
+                // Логика цвета HP бара для чистой машины
+                if (hpPercentage >= 75) {
+                    hpBarFill.style.backgroundColor = '#a3be8c'; // Зеленый
+                } else if (hpPercentage >= 30) { // Порог для желтого был 75, теперь > 30 (и не грязная)
+                    hpBarFill.style.backgroundColor = '#ebcb8b'; // Желтый
+                } else { // Меньше 30% (и не грязная)
+                     hpBarFill.style.backgroundColor = '#ef4444'; // Красный
+                }
             }
         }
         
-        // Обновление отображения баланса
         function updateBalanceDisplay() {
             balanceDisplay.textContent = `${currentBalance} vest`;
         }
 
-        // Анимация "+очки"
         function animatePoints(x, y) {
             const pointsElement = document.createElement('div');
             pointsElement.textContent = `+${tapValue}`;
             pointsElement.className = 'floating-points';
             
-            // Позиционируем относительно mainContent, чтобы координаты были корректны
             const mainContentRect = mainContent.getBoundingClientRect();
-            pointsElement.style.left = `${x - mainContentRect.left - 20}px`; // -20 для центрирования
-            pointsElement.style.top = `${y - mainContentRect.top - 30}px`;  // -30 чтобы было над пальцем
+            pointsElement.style.left = `${x - mainContentRect.left - 25}px`; 
+            pointsElement.style.top = `${y - mainContentRect.top - 20}px`;  
 
             pointsElement.style.animationName = 'floatUpAndFade';
             
@@ -306,41 +359,26 @@
             });
         }
 
-        // Анимация монетки
         function animateCoin(startX, startY) {
-            const coinElement = document.createElement('img');
-            coinElement.src = COIN_IMAGE_URL;
-            coinElement.className = 'floating-coin';
-
-            const mainContentRect = mainContent.getBoundingClientRect();
-            coinElement.style.left = `${startX - mainContentRect.left - 15}px`; // -15 для центрирования монетки
-            coinElement.style.top = `${startY - mainContentRect.top - 15}px`;
-
-            // Координаты цели (верхний элемент с балансом)
-            const targetRect = currencyDisplayElement.getBoundingClientRect();
-            const gameAppRect = document.getElementById('gameApp').getBoundingClientRect();
-
-            // Вычисляем относительные координаты цели для анимации
-            // Начало координат анимации - это точка клика ВНУТРИ mainContent
-            // Цель - это currencyDisplayElement, его координаты тоже нужно сделать относительными к mainContent
-            // Но проще анимировать до абсолютных координат, если coinElement позиционируется абсолютно к gameApp
-            // Переделаем: позиционируем coinElement абсолютно к gameApp
-            
             const appCoin = document.createElement('img');
             appCoin.src = COIN_IMAGE_URL;
             appCoin.className = 'floating-coin';
-            document.getElementById('gameApp').appendChild(appCoin); // Добавляем к главному контейнеру
+            document.getElementById('gameApp').appendChild(appCoin); 
 
-            appCoin.style.left = `${startX - gameAppRect.left - 15}px`;
-            appCoin.style.top = `${startY - gameAppRect.top - 15}px`;
+            const gameAppRect = document.getElementById('gameApp').getBoundingClientRect();
+            const coinSize = 30; 
+            const coinInitialX = startX - gameAppRect.left - coinSize / 2; 
+            const coinInitialY = startY - gameAppRect.top - coinSize / 2;
+
+            appCoin.style.left = `${coinInitialX}px`;
+            appCoin.style.top = `${coinInitialY}px`;
             
-            // Конечные координаты относительно gameApp
-            const endX = (targetRect.left + targetRect.width / 2) - gameAppRect.left - 15; // Центр элемента баланса
-            const endY = targetRect.top - gameAppRect.top;
+            const targetRect = currencyDisplayElement.getBoundingClientRect();
+            const endX = (targetRect.left + targetRect.width / 2) - gameAppRect.left - coinSize / 2;
+            const endY = targetRect.top - gameAppRect.top + 5; 
 
-            // Устанавливаем CSS переменные для анимации
-            appCoin.style.setProperty('--target-x', `${endX - (startX - gameAppRect.left - 15)}px`);
-            appCoin.style.setProperty('--target-y', `${endY - (startY - gameAppRect.top - 15)}px`);
+            appCoin.style.setProperty('--target-x', `${endX - coinInitialX}px`);
+            appCoin.style.setProperty('--target-y', `${endY - coinInitialY}px`);
             appCoin.style.animationName = 'coinFlyToScore';
             
             appCoin.addEventListener('animationend', () => {
@@ -348,28 +386,37 @@
             });
         }
 
-        // Показать сообщение о необходимости ТО
         function showMaintenanceAlert() {
             maintenanceAlert.style.display = 'block';
             setTimeout(() => {
                 maintenanceAlert.style.display = 'none';
-            }, 3000); // Скрыть через 3 секунды
+            }, 2500); 
         }
         
-        // Навигация (заглушка)
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
-            item.addEventListener('click', () => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault(); 
                 navItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                // Здесь будет логика переключения экранов
+                // Пытаемся получить текст из span, если он есть, иначе из всего nav-item
+                const buttonText = item.querySelector('span') ? item.querySelector('span').textContent.trim() : item.textContent.trim().split('\n').pop().trim();
+
                 console.log(`Переход на экран: ${item.dataset.screen}`);
-                 alert(`Заглушка: Переход на экран "${item.textContent}"`);
+                if (window.Telegram && window.Telegram.WebApp) {
+                     window.Telegram.WebApp.showAlert(`Заглушка: Переход на экран "${buttonText}"`);
+                } else {
+                    alert(`Заглушка: Переход на экран "${buttonText}"`);
+                }
             });
         });
 
-        // Запуск игры при загрузке страницы
-        window.onload = initGame;
+        window.onload = function() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready(); 
+            }
+            initGame();
+        };
 
     </script>
 </body>
